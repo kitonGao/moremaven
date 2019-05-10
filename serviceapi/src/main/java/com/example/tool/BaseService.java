@@ -1,7 +1,7 @@
 package com.example.tool;
 
-import com.example.util.DomainCheckType;
-import com.example.util.PageListDto;
+import com.example.dto.DomainCheckType;
+import com.example.dto.PageListDto;
 import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;

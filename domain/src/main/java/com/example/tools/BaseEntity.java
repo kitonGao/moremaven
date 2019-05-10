@@ -13,6 +13,6 @@ import java.io.Serializable;
  * @since 1.0.0
  * 备注:写这段代码的时候，只有上帝和我知道它是干嘛的。现在，只有上帝知道。
  */
-public class BaseEntity implements Serializable{
+public abstract class BaseEntity implements Serializable{
 
 }

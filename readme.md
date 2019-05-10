@@ -1,5 +1,48 @@
 # 引用。 暂时还不会MD 语法
 
+##整合Redis
+### 1.Redis的优点：
+    - 1.性能极高： Redis的读取速度约为 1100000次/s， 写的速度约是81000次/s
+    - 2.支持丰富的数据类型。 Redis支持二进制案例的Strings，Lists，Hashes，Sets及Ordered Sets 数据类型
+    - 3. Redis的所有操作都是原子性的， 也就是执行时要么成功执行要么失败完全不执行。单个操作是原子性的，全部操作也支持事务，即原子性，通过MULTI和EXEC指令包起来
+    - 4.丰富的特性， Redis 支持publish/subscribe， 通知， key过期等等特性
+    - 5.支持持久化RDB和AOF。 RDB在redis.conf配置文件里配置持久化触发器，AOF指的是redis没增加一条记录都会保存到持久化文件中（保存的是这条记录的生成命令），如果不是用redis做DB用的话还会不要开AOF ，数据太庞大了，重启恢复的时候是一个巨大的工程！
+    - 6.replication。redis提供主从复制方案，跟mysql一样增量复制而且复制的实现都很相似，这个复制跟AOF有点类似复制的是新增记录命令，主库新增记录将新增脚本发送给从库，从库根据脚本生成记录，这个过程非常快，就看网络了，一般主从都是在同一个局域网，
+            所以可以说redis的主从近似及时同步，同事它还支持一主多从，动态添加从库，从库数量没有限制。 主从库搭建，我觉得还是采用网状模式，如果使用链式（master-slave-slave-slave-slave·····）如果第一个slave出现宕机重启，首先从master 接收
+            数据恢复脚本，这个是阻塞的，如果主库数据几TB的情况恢复过程得花上一段时间，在这个过程中其他的slave就无法和主库同步了。 
+    - 7.更新版本快。
+### 2. 整合步骤：
+- 1.导入依赖：
+
+    
+    （注：因为导入该依赖之后，SpringBoot 的CacheManager 就会使用RedisCache
+        所以不需要Spring-boot-starter-cache 该依赖，如果你导入Redis该配置，则该程序默认已经启用Redis 缓存）
+    
+     <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+     </dependency>
+     
+- 2.配置集群Redis：
+
+    --1.Redis集群至少需要3个节点，因为投票容错机制要求超过半数节点认为某个节点挂了该节点才是挂了，所以2个节点无法构成集群。
+    --2.要保证集群的高可用，需要每个节点都有从节点，也就是备份节点，所以Redis集群至少需要6台服务器。
+
+    配置 application.yml 或者 application.properties文件
+        
+        spring.redis.cache.clusterNodes: 127.0.0.1:6379,....
+        spring.redis.cache.commandTimeout:5000
+        
+    
+> RedisTemplate 和 StringRedisTemplate 的区别
+--> 1. 两者的区别是使用的序列化不一样，RedisTemplate使用的是JdkSerializationRedisSerializer
+    而StringRedisTemplate使用的是StringRedisSerializer，两者的数据是不共通的。
+--> 2.
+
+         
+    
+
+
 # SpringBoot创建maven多模块项目(实战)
 
 > 工作中一直都是一个人奋战一人一个项目，使用maven管理，看这个也挺好，但是总感觉没有充分发挥maven的功能，于是研究了一下这个，网上关于这个的文章很多，虽然不是很好，但我从中收获了很多，在这集百家所长，写一份实战记录，大家跟着我一块做吧！
